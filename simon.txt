@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simple Simon Game</title>
+  <style>
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+  
+  body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    font-family: Arial, sans-serif;
+    background-color: #222;
+    color: #fff;
+  }
+  
+  #game-container {
+    text-align: center;
+  }
+  
+  h1 {
+    margin-bottom: 20px;
+  }
+  
+  .buttons {
+    display: grid;
+    grid-template-columns: repeat(2, 100px);
+    gap: 10px;
+    margin: 20px auto;
+  }
+  
+  .button {
+    width: 100px;
+    height: 100px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+  }
+  
+  #green { background-color: green; }
+  #red { background-color: red; }
+  #yellow { background-color: yellow; }
+  #blue { background-color: blue; }
+  
+  button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+  
+  #start-btn {
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+  }
+  </style>
+</head>
+<body>
+  <div id="game-container">
+    <h1>Simon Game</h1>
+    <div id="score">Score: 0</div>
+    <div class="buttons">
+      <div class="button" id="green"></div>
+      <div class="button" id="red"></div>
+      <div class="button" id="yellow"></div>
+      <div class="button" id="blue"></div>
+    </div>
+    <button id="start-btn">Start Game</button>
+  </div>
+
+  <script>
+    const colors = ["green", "red", "yellow", "blue"];
+let gameSequence = [];
+let playerSequence = [];
+let score = 0;
+
+const startBtn = document.getElementById("start-btn");
+const scoreDisplay = document.getElementById("score");
+
+function startGame() {
+  gameSequence = [];
+  playerSequence = [];
+  score = 0;
+  scoreDisplay.textContent = "Score: 0";
+  nextRound();
+}
+
+function nextRound() {
+  playerSequence = [];
+  score++;
+  scoreDisplay.textContent = `Score: ${score}`;
+  
+  const randomColor = colors[Math.floor(Math.random() * colors.length)];
+  gameSequence.push(randomColor);
+  playSequence();
+}
+
+function playSequence() {
+  let delay = 500;
+
+  gameSequence.forEach((color, index) => {
+    setTimeout(() => {
+      activateButton(color);
+    }, delay * (index + 1));
+  });
+}
+
+function activateButton(color) {
+  const button = document.getElementById(color);
+  button.style.opacity = "0.5";
+  setTimeout(() => {
+    button.style.opacity = "1";
+  }, 300);
+}
+
+function handleButtonClick(color) {
+  playerSequence.push(color);
+  activateButton(color);
+  
+  if (!checkSequence()) {
+    alert("Game Over! Your score: " + (score - 1));
+    startGame();
+    return;
+  }
+  
+  if (playerSequence.length === gameSequence.length) {
+    setTimeout(nextRound, 800);
+  }
+}
+
+function checkSequence() {
+  for (let i = 0; i < playerSequence.length; i++) {
+    if (playerSequence[i] !== gameSequence[i]) return false;
+  }
+  return true;
+}
+
+colors.forEach(color => {
+  const button = document.getElementById(color);
+  button.addEventListener("click", () => handleButtonClick(color));
+});
+
+startBtn.addEventListener("click", startGame);
+
+  </script>
+</body>
+</html>
